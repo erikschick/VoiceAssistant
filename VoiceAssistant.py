@@ -1,21 +1,16 @@
-import speech_recognition
+import sys
+from MusicHandler import MusicHandler
+import Speech
 
-recognizer = speech_recognition.Recognizer()
+reload(sys)
+sys.setdefaultencoding('Cp1252')  # fix for unicode file names in windows
 
-
-def listen():
-    with speech_recognition.Microphone() as source:
-        recognizer.adjust_for_ambient_noise(source)
-        audio = recognizer.listen(source)
-
-    try:
-        return recognizer.recognize_google(audio)
-    except speech_recognition.UnknownValueError:
-        print("Could not understand audio")
-    except speech_recognition.RequestError as e:
-        print("Recog Error; {0}".format(e))
-
-    return ""
+voice_handlers = {"music": MusicHandler}
 
 print("Say something!")
-print("I heard you say \"{}\"".format(listen()))
+user_input = Speech.listen()
+print("I heard you say \"{}\"".format(user_input))
+
+for keyword, handler in voice_handlers.iteritems():
+    if keyword in user_input:
+        handler(user_input)
